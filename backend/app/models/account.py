@@ -11,8 +11,8 @@ class Account(Base):
     holder_id = Column(String, unique=True, nullable=False)
     account_type = Column(String, nullable=False)
     balance = Column(Float, default=0.0)
-    created_at = Column(DateTime, default=datetime.timezone.utc)
-    updated_at = Column(DateTime, default=datetime.time, onupdate=datetime.timezone.utc)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def to_dict(self):
         return {
