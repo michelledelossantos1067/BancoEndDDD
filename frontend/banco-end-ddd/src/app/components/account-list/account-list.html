@@ -1,0 +1,70 @@
+<div class="container">
+  <h2>Gestión de cuentas</h2>
+
+  <button class="btn btn-primary" (click)="showForm = !showForm">
+    {{ showForm ? 'Hide Form' : 'Create New Account' }}
+  </button>
+
+  <div *ngIf="showForm" class="form-container">
+      <h3>Crear una cuenta</h3>
+      <form (ngSubmit)="createAccount()">
+        <div class="form-group">
+          <label>Nombre del titular:</label>
+          <input type="text" [(ngModel)]="newAccount.holder_name" name="holder_name" required>
+        </div>
+        <div class="form-group">
+          <label>ID del titular:</label>
+          <input type="text" [(ngModel)]="newAccount.holder_id" name="holder_id" required>
+        </div>
+        <div class="form-group">
+          <label>Tipo de cuenta:</label>
+          <select [(ngModel)]="newAccount.account_type" name="account_type">
+            <option value="savings">Ahorros</option>
+            <option value="checking">Corriente</option>
+            <option value="business">Empresarial</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-success">Create</button>
+        <button type="button" class="btn btn-secondary" (click)="showForm = false; resetForm()">Cancel</button>
+      </form>
+    </div>
+
+  <div class="accounts-grid">
+    <div *ngFor="let account of accounts" class="account-card">
+      <div *ngIf="editingAccount?.id !== account.id">
+          <div>
+            <h3>{{ account.holder_name }}</h3>
+            <p><strong>Número de cuenta:</strong> {{ account.account_number }}</p>
+            <p><strong>ID:</strong> {{ account.holder_id }}</p>
+            <p><strong>Type:</strong> {{ account.account_type }}</p>
+            <p><strong>Balance:</strong> ${{ account.balance?.toFixed(2) }}</p>
+            <div class="actions">
+              <button class="btn btn-edit" (click)="editAccount(account)">Editar</button>
+              <button class="btn btn-delete" (click)="deleteAccount(account.id)">Eliminar</button>
+            </div>
+          </div>
+      </div>
+
+      <div *ngIf="editingAccount?.id === account.id">
+        <div>
+            <h3>Editar cuenta</h3>
+            <div class="form-group">
+              <label>Nombre del titular:</label>
+              <input type="text" [(ngModel)]="editingAccount!.holder_name" name="editing_holder_name">
+            </div>
+            <div class="form-group">
+              <label>Tipo de cuenta:</label>
+              <select [(ngModel)]="editingAccount!.account_type" name="account_type">
+                <option value="savings">Ahorros</option>
+                <option value="checking">Corriente</option>
+                <option value="business">Empresarial</option>
+              </select>
+            </div>
+            <div class="actions">
+              <button class="btn btn-success" (click)="updateAccount()">Guardar</button>
+              <button class="btn btn-secondary" (click)="cancelEdit()">Cancelar</button>
+            </div>
+          </div>
+      </div>
+  </div>
+</div>
