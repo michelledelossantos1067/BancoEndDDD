@@ -1,13 +1,16 @@
 from flask import Flask
 from flask_cors import CORS
 from app.database.config import init_db
+from app.controllers.account_controller import account_bp
 
 app = Flask(__name__)
 CORS(app)
 
+app.register_blueprint(account_bp, url_prefix='/api')
+
 @app.route('/')
 def home():
-    return {"message": "Bank System API", "version": "0.1.0"}, 200
+    return {"message": "Bank System API", "version": "0.2.0"}, 200
 
 @app.route('/health')
 def health():
