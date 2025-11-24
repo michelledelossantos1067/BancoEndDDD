@@ -1,0 +1,111 @@
+<div class="container">
+  <h2>Gestión de transacciones</h2>
+
+  <div class="filter-section">
+    <label>Filtrar por cuenta:</label>
+    <select [(ngModel)]="selectedAccountId" (change)="filterByAccount()">
+      <option [ngValue]="null">Todas las cuentas</option>
+      @for (account of accounts; track account.id) {
+        <option [ngValue]="account.id">
+          {{ account.holder_name }} - {{ account.account_number }}
+        </option>
+      }
+    </select>
+  </div>
+
+  <button class="btn btn-primary" (click)="showForm = !showForm">
+    {{ showForm ? 'Ocultar formulario' : 'Crear nueva transacción' }}
+  </button>
+
+  @if (showForm) {
+    <div class="form-container">
+      <h3>Crear transacción</h3>
+      <form (ngSubmit)="createTransaction()">
+        <div class="form-group">
+          <label>Cuenta: *</label>
+          <select [(ngModel)]="newTransaction.account_id" name="account_id" required>
+            <option [value]="0" disabled>Seleccione una cuenta</option>
+            @for (account of accounts; track account.id) {
+              <option [value]="account.id">
+                {{ account.holder_name }} - {{ account.account_number }} (${{ account.balance?.toFixed(2) }})
+              </option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tipo de transacción: *</label>
+          <select [(ngModel)]="newTransaction.transaction_type" name="transaction_type" required>
+            <option value="deposit">Depósito</option>
+            <option value="withdrawal">Retiro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Importe: *</label>
+          <input 
+            type="number" 
+            [(ngModel)]="newTransaction.amount" 
+            name="amount" 
+            min="0.01" 
+            step="0.01" 
+            placeholder="0.00"
+            required>
+        </div>
+        <div class="form-group">
+          <label>Descripción:</label>
+          <input 
+            type="text" 
+            [(ngModel)]="newTransaction.description" 
+            name="description"
+            placeholder="Descripción opcional">
+        </div>
+        <button type="submit" class="btn btn-success">Crear</button>
+        <button type="button" class="btn btn-secondary" (click)="showForm = false; resetForm()">Cancelar</button>
+      </form>
+    </div>
+  }
+
+  <div class="transactions-table">
+    @if (transactions.length === 0) {
+      <p class="no-data">No hay transacciones para mostrar</p>
+    } @else {
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Cuenta</th>
+            <th>Tipo</th>
+            <th>Importe</th>
+            <th>Saldo después</th>
+            <th>Descripción</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (transaction of transactions; track transaction.id) {
+            <tr 
+              [class.deposit]="transaction.transaction_type === 'deposit'"
+              [class.withdrawal]="transaction.transaction_type === 'withdrawal'">
+              <td>{{ transaction.id }}</td>
+              <td>{{ transaction.created_at | date:'short' }}</td>
+              <td>{{ getAccountName(transaction.account_id) }}</td>
+              <td class="type-badge">
+                <span [class]="'badge ' + transaction.transaction_type">
+                  {{ getTransactionTypeLabel(transaction.transaction_type) }}
+                </span>
+              </td>
+              <td class="amount">${{ transaction.amount?.toFixed(2) }}</td>
+              <td class="balance">${{ transaction.balance_after?.toFixed(2) }}</td>
+              <td>{{ transaction.description || '-' }}</td>
+              <td>
+                <button class="btn btn-delete btn-small" (click)="deleteTransaction(transaction.id)">
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>
