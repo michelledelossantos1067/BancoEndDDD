@@ -2,11 +2,13 @@ from flask import Flask
 from flask_cors import CORS
 from app.database.config import init_db
 from app.controllers.account_controller import account_bp
+from app.controllers.transaction_controller import transaction_bp
 
 app = Flask(__name__)
 CORS(app)
 
 app.register_blueprint(account_bp, url_prefix='/api')
+app.register_blueprint(transaction_bp, url_prefix='/api')
 
 @app.route('/')
 def home():
